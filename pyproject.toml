@@ -1,0 +1,15 @@
+[build-system]
+requires = ["maturin>=1.4"]
+build-backend = "maturin"
+
+[project]
+name = "sphere"
+version = "0.1.0"
+requires-python = ">=3.10"
+
+[project.scripts]
+sph = "sphere.cli:app"
+
+[tool.maturin]
+module-name = "sphere_native_rust"
+manifest-path = "sphere/native/Cargo.toml"
