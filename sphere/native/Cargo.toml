@@ -7,5 +7,6 @@ edition = "2024"
 name = "sphere_native_rust"
 crate-type = ["cdylib"]
 [dependencies]
-
+raw-cpuid = "11.6.0"
+sysinfo = "0.37.2"
 pyo3 = { version = "0.21", features = ["extension-module"] }
