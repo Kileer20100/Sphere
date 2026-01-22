@@ -17,4 +17,4 @@ chmod +x .venv/bin/sph
 
 echo "Shebang fixed in .venv/bin/sph"
 echo "sph Version:"
-sph -v
+sph v
