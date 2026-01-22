@@ -1,12 +1,9 @@
 use pyo3::prelude::*;
 
-#[pyfunction]
-fn cpu_count() -> usize {
-    32
-}
 
+mod cpu_info;
 #[pymodule]
 fn sphere_native_rust(_py: Python, m: &PyModule) -> PyResult<()>{
-    m.add_function(wrap_pyfunction!(cpu_count, m)?)?;
+    cpu_info::register_functions_cpu_info(m)?;
     Ok(())
 }
