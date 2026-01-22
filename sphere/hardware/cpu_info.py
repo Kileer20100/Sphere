@@ -235,5 +235,3 @@ def has_bmi1() -> bool:
 
 def has_bmi2() -> bool:
     return sphere_native_rust.has_bmi2()
-
-
