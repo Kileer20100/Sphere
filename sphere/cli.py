@@ -6,26 +6,42 @@ from pathlib import Path
 from sphere import app_version
 
 import  sphere_native_rust
+from .hardware import cpu_info, ram, disk
+from enum import Enum
+
+
+
 
 app = typer.Typer(help="Sphere {version} Command Line Interface".format(version=app_version.VERSION))
 
-@app.command()
-def main(
-    show_version: bool = typer.Option(False, '-v', '--version'),
-    show_cpu: bool = typer.Option(False, '--cpu'),
-    show_ram: bool = typer.Option(False, '--ram'),
-    optimize: bool = typer.Option(False, '--optimize')
-):
-    if show_version:
-        typer.echo(app_version.VERSION)
-    if show_cpu:
-        typer.echo(f"CPU Count: {cpu.get_cpu_count()}")
-    if show_ram:
-        typer.echo(f"RAM Info: {ram.get_ram_info()}")
-    if optimize:
-        tasks.run_optimization()
-    if not (show_version or show_cpu or show_ram or optimize):
-        typer.echo("Use --help to see available options.")
+
+
+
+@app.command("v", help="Show application version")
+def v():
+    typer.echo(app_version.VERSION)
+    raise typer.Exit()
+
+@app.command("cpu", help="Show CPU information -m for minimal, -f for full")
+def cpu(   
+    minimal: bool = typer.Option(False, "-m", help="Show minimal CPU info"),
+    full: bool = typer.Option(False, "-f", help="Show full CPU info")
+    ):
+    mode = handle_cpu_flags(minimal, full)
+    cpu_info.cpu_show(mode)
+    raise typer.Exit() 
+
+
+def handle_cpu_flags(minimal: bool, full: bool) -> str:
+    if minimal and full:
+        typer.echo("Please specify only one option: '-m' or '-f'.")
+        return "invalid"
+    if full:
+        return "full"
+    elif minimal:
+        return "minimal"
+    else:
+        return "invalid"
 
 if __name__ == "__main__":
     app()
