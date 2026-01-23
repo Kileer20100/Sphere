@@ -6,7 +6,11 @@ from pathlib import Path
 from sphere import app_version
 
 import  sphere_native_rust
-from .hardware import cpu_info, ram_info, disk, logo, net_show
+
+from .hardware.cpu_info import cpu_info, handle_cpu_flags
+
+from . import logo
+from .hardware import ram_info, disk, net_show
 from enum import Enum
 
 
@@ -31,7 +35,7 @@ def cpu(
     minimal: bool = typer.Option(False, "-m", help="Show minimal CPU info"),
     full: bool = typer.Option(False, "-f", help="Show full CPU info")
     ):
-    mode = handle_cpu_flags(minimal, full)
+    mode = handle_cpu_flags.handle_cpu_flags(minimal, full)
     cpu_info.cpu_show(mode)
     raise typer.Exit() 
 
@@ -54,17 +58,6 @@ def ram(
     ram_info.ram_show(mode)
     raise typer.Exit()
 
-
-def handle_cpu_flags(minimal: bool, full: bool) -> str:
-    if minimal and full:
-        typer.echo("Please specify only one option: '-m' or '-f'.")
-        return "invalid"
-    if full:
-        return "full"
-    elif minimal:
-        return "minimal"
-    else:
-        return "invalid"
 
 def handle_ram_flags(minimal: bool, full: bool) -> str:
     if minimal and full:
