@@ -6,7 +6,7 @@ from pathlib import Path
 from sphere import app_version
 
 import  sphere_native_rust
-from .hardware import cpu_info, ram_info, disk, logo
+from .hardware import cpu_info, ram_info, disk, logo, net_show
 from enum import Enum
 
 
@@ -35,10 +35,19 @@ def cpu(
     raise typer.Exit() 
 
 
+@app.command("net", help="Show NET information -m for minimal, -f for full")
+def net(   
+    minimal: bool = typer.Option(False, "-m", help="Show minimal NET info"),
+    full: bool = typer.Option(False, "-f", help="Show full NET info")
+    ):
+    mode = handle_cpu_flags(minimal, full)
+    net_show.net_show(mode)
+    raise typer.Exit() 
+
 @app.command("ram", help="Show RAM information -m for minimal, -f for full")
 def ram(
-    minimal: bool = typer.Option(False, "-m", help="Show minimal CPU info"),
-    full: bool = typer.Option(False, "-f", help="Show full CPU info")
+    minimal: bool = typer.Option(False, "-m", help="Show minimal RAM info"),
+    full: bool = typer.Option(False, "-f", help="Show full RAM info")
     ):
     mode = handle_ram_flags(minimal, full)
     ram_info.ram_show(mode)
