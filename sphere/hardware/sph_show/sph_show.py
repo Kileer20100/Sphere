@@ -1,0 +1,120 @@
+import typer
+import psutil
+import platform
+import os
+import sys
+import getpass
+import re
+import time
+import socket
+
+import sphere_native_rust
+
+from ...app_version import VERSION
+
+def sph_show():
+    users = psutil.users()
+    for u in users:
+        username = f"{u.name}"
+
+    sys_info = platform.uname()
+    typer.echo()
+    import subprocess
+
+    shell_path = os.environ.get("SHELL", "/bin/sh")
+
+    try:
+        result = subprocess.run(
+            [shell_path, "--version"], 
+            capture_output=True,
+            text=True,
+            check=True
+        )
+        output = result.stdout
+        match = re.search(r"\d+\.\d+(\.\d+)?", output)
+        version = match.group(0) if match else "unknown"
+    except Exception:
+        version = "unknown"
+
+    logo =  r"""
+                     :=+***++-:                          
+                  -*%@@@@@@@@@@%+:                  
+                -%@@@@@@@@@@@@@@@@#-   .::::.       
+              .*@@@@@@@@@@@@@@@@@@@@#%@%%@@@@%*.                    OS
+             .%@@@@@@@@@@@@@@@@@@@@@@%.  .-%@@@=                    Shell
+             #@@@@@@@@@@@@@@@@@@@@@@@@*    *@@%.                    SPH     
+            =@@@@@@@@@@@@@@@@@@@@@@@@@@-  -@@#.                     Uptime
+            %@@@@@@@@@@@@@@@@@@@@@@@@@@=.*@@+                       MotherBoard
+           :@@@@@@@@@@@@@@@@@@@@@@@@@+-*@@*.                        CPU
+           :@@@@@@@@@@@@@@@@@@@@@@#=-*@%+.                          Memory
+         .+%@@@@@@@@@@@@@@@@@@@#+-+%@#=-                            GPU
+        =%#:#@@@@@@@@@@@@@@@#==+%@%+-=##            
+      :#@+  -@@@@@@@@@@@#+==*%@%+-=#@@@:            
+     -@@*    *@@@@@%*===*%@%#=-=#@@@@@+             
+     %@@#.    =====+#%@%*=-=*%@@@@@@@+              
+     %@@@@####%@@@%#+=-=*%@@@@@@@@@%=               
+      -+*##**+=-:.=*#@@@@@@@@@@@@@+.                
+                  .=#%@@@@@@@@%*-.                  
+                      :--==-:.                      ⠀⠀⠀⠀⠀
+            """
+    
+    username = getpass.getuser()
+    hostname = platform.node()
+    mb = socket.gethostname()
+
+    info = [
+    "OS Information:",
+    "",
+    f"{username}@{sys_info.node}",
+    "============",
+    f"{platform.system()} {hostname.capitalize()} {sys_info.machine}",
+    f"{version}",
+    f"{VERSION}",
+    f"{get_uptime()}",
+    f"{get_motherb()}",
+    f"{brand()}",
+    f"{ram_info()}"
+    ]
+
+    logo_lines = logo.splitlines()
+    width = max(len(line) for line in logo_lines)
+    # padding = 4
+
+    for i in range(max(len(logo_lines), len(info))):
+        left = logo_lines[i] if i < len(logo_lines) else ""
+        right = str(info[i]) if i < len(info) and info[i] is not None else ""
+        typer.echo(f"\033[34m{left.ljust(width)}\033[0m" + " " + right)
+
+
+
+
+def get_uptime():
+    uptime_sec = time.time() - psutil.boot_time()
+    days = int(uptime_sec // 86400)
+    hours = int((uptime_sec % 86400) // 3600)
+    minutes = int((uptime_sec % 3600) // 60)
+
+    uptime = ""
+    if days > 0:
+        uptime += f"{days}D "
+    if hours > 0 or days > 0:
+        uptime += f"{hours}H "
+    if minutes > 0 or hours > 0 or days >0:
+        uptime += f"{minutes}M "
+    return uptime
+
+
+def get_motherb():
+    with open("/sys/class/dmi/id/board_name", "r") as f:
+        return f.read().strip()
+    
+
+def to_gb(bytes: int):
+    return f"{bytes / (1024 ** 3):.2f} GB"
+
+def ram_info():
+    ram = psutil.virtual_memory()
+    return f"{to_gb(ram.used)}/{to_gb(ram.total)}"
+
+def brand() -> str:
+    return sphere_native_rust.brand()
