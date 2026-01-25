@@ -60,7 +60,6 @@ def update(
         "Displays a list of packages that can be updated without actually performing the update.\n"
     )
 )
-
 def update_check():
     check_update.check_update()
     raise typer.Exit()
