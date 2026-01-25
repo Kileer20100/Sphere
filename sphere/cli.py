@@ -13,6 +13,8 @@ from .hardware.net_show import net_show, handle_net_flags
 from .hardware.ram_info import ram_info, handle_ram_flags
 from .hardware.cpu_info import cpu_info, handle_cpu_flags
 from .hardware.gpu_info import gpu_info, handle_gpu_flags
+from .hardware.disk_show import disk_info, handle_disk_flags
+
 from .hardware.users import show_user
 
 from .pkg_actions.install import install_main
@@ -20,7 +22,6 @@ from .pkg_actions.update import update_main
 
 
 from . import logo
-from .hardware import disk
 from enum import Enum
 
 
@@ -69,6 +70,17 @@ def cpu(
     ):
     mode = handle_cpu_flags.handle_cpu_flags(minimal, full)
     cpu_info.cpu_show(mode)
+    raise typer.Exit() 
+
+
+
+@app.command("disk", help="Show Disk information -m for minimal, -f for full")
+def disk(   
+    minimal: bool = typer.Option(False, "-m", help="Show minimal Disk info"),
+    full: bool = typer.Option(False, "-f", help="Show full Disk info")
+    ):
+    mode = handle_disk_flags.handle_disk_flags(minimal, full)
+    disk_info.disk_show(mode)
     raise typer.Exit() 
 
 @app.command("gpu", help="Show GPU information -m for minimal, -f for full")

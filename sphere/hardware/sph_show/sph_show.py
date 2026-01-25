@@ -9,7 +9,7 @@ import time
 import socket
 
 import sphere_native_rust
-
+from ...lib.gpu import gpu_name, gpu_type
 from ...app_version import VERSION
 
 def sph_show():
@@ -46,8 +46,8 @@ def sph_show():
             =@@@@@@@@@@@@@@@@@@@@@@@@@@-  -@@#.                     Uptime
             %@@@@@@@@@@@@@@@@@@@@@@@@@@=.*@@+                       MotherBoard
            :@@@@@@@@@@@@@@@@@@@@@@@@@+-*@@*.                        CPU
-           :@@@@@@@@@@@@@@@@@@@@@@#=-*@%+.                          Memory
-         .+%@@@@@@@@@@@@@@@@@@@#+-+%@#=-                            GPU
+           :@@@@@@@@@@@@@@@@@@@@@@#=-*@%+.                          GPU
+         .+%@@@@@@@@@@@@@@@@@@@#+-+%@#=-                            Memory
         =%#:#@@@@@@@@@@@@@@@#==+%@%+-=##            
       :#@+  -@@@@@@@@@@@#+==*%@%+-=#@@@:            
      -@@*    *@@@@@%*===*%@%#=-=#@@@@@+             
@@ -73,6 +73,7 @@ def sph_show():
     f"{get_uptime()}",
     f"{get_motherb()}",
     f"{brand()}",
+    f"{gpu_name()} {gpu_type()}",
     f"{ram_info()}"
     ]
 
