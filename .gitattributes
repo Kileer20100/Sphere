@@ -1,0 +1,21 @@
+*.py linguist-language=Python
+*.pyw linguist-language=Python
+
+*.rs linguist-language=Rust
+Cargo.toml linguist-language=Rust
+
+__pycache__/** linguist-vendored
+*.py[cod] linguist-vendored
+target/** linguist-vendored
+
+*.md linguist-documentation
+*.txt linguist-documentation
+*.yml linguist-documentation
+*.yaml linguist-documentation
+*.json linguist-documentation
+.gitignore linguist-documentation
+
+*.so linguist-vendored
+*.pyd linguist-vendored
+*.dll linguist-vendored
+*.exe linguist-vendored
