@@ -8,7 +8,7 @@ from sphere import app_version
 import  sphere_native_rust
 
 from .hardware.net_show import net_show
-
+from .hardware.sph_show import sph_show
 from .hardware.net_show import net_show, handle_net_flags
 from .hardware.ram_info import ram_info, handle_ram_flags
 from .hardware.cpu_info import cpu_info, handle_cpu_flags
@@ -45,6 +45,12 @@ def logo_show():
 @app.command("users", help="Show all user")
 def user_show():
     show_user.show_user()
+    raise typer.Exit()
+
+
+@app.command("sphfetch", help="Display info about system and logo")
+def sphfetch():
+    sph_show.sph_show()
     raise typer.Exit()
 
 
