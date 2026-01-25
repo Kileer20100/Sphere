@@ -12,6 +12,7 @@ from .hardware.sph_show import sph_show
 from .hardware.net_show import net_show, handle_net_flags
 from .hardware.ram_info import ram_info, handle_ram_flags
 from .hardware.cpu_info import cpu_info, handle_cpu_flags
+from .hardware.gpu_info import gpu_info, handle_gpu_flags
 from .hardware.users import show_user
 from .install import install_main
 
@@ -63,6 +64,15 @@ def cpu(
     cpu_info.cpu_show(mode)
     raise typer.Exit() 
 
+@app.command("gpu", help="Show GPU information -m for minimal, -f for full")
+def cpu(   
+    minimal: bool = typer.Option(False, "-m", help="Show minimal GPU info"),
+    full: bool = typer.Option(False, "-f", help="Show full GPU info")
+    ):
+    
+    mode = handle_gpu_flags.handle_gpu_flags(minimal, full)
+    gpu_info.gpu_show(mode)
+    raise typer.Exit() 
 
 @app.command("net", help="Show NET information -m for minimal, -f for full")
 def net(   

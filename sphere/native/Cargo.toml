@@ -1,3 +1,6 @@
+[workspace.metadata]
+rustflags = ["-A", "unsafe_op_in_unsafe_fn"]
+
 [package]
 name = "sphere_native"
 version = "0.1.0"
@@ -13,3 +16,9 @@ cpuid = "0.1"
 num_cpus = "1.0"  
 psutil = "0.9"
 pyo3 = { version = "0.21", features = ["extension-module"] }
+
+
+wgpu = "0.19"
+pollster = "0.3"
+
+

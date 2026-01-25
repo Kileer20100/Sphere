@@ -1,1 +1,1 @@
-/home/kiril/Sphere/sphere/native/target/release/libsphere_native_rust.so: /home/kiril/Sphere/sphere/native/src/cpu_info.rs /home/kiril/Sphere/sphere/native/src/lib.rs
+/home/kiril/Sphere/sphere/native/target/release/libsphere_native_rust.so: /home/kiril/Sphere/sphere/native/src/cpu_info.rs /home/kiril/Sphere/sphere/native/src/gpu_info.rs /home/kiril/Sphere/sphere/native/src/lib.rs
