@@ -294,6 +294,8 @@ impl GpuInfo {
 
 
 }
+//I know this solution is inefficient, but pyo3 gives an "unsafe" error when calling the "GpuInfo" function.
+//Perhaps this will be fixed in the next version.
 #[pyfunction]
 pub fn gpu_name() -> String { GpuInfo::new().gpu_name()}
 #[pyfunction]
@@ -370,3 +372,5 @@ pub fn max_compute_workgroups_per_dimension() -> String { GpuInfo::new().max_com
 pub fn supported_texture_compression() -> String { GpuInfo::new().supported_texture_compression()}
 #[pyfunction]
 pub fn supported_shader_features() -> String { GpuInfo::new().supported_shader_features()}
+//I know this solution is inefficient, but pyo3 gives an "unsafe" error when calling the "GpuInfo" function.
+//Perhaps this will be fixed in the next version.
