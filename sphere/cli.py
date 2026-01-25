@@ -19,6 +19,7 @@ from .hardware.users import show_user
 
 from .pkg_actions.install import install_main
 from .pkg_actions.update import update_main
+from .pkg_actions.check_update import check_update
 
 
 from . import logo
@@ -32,6 +33,8 @@ def install(package: str):
     install_main.install(package)
     raise typer.Exit()
 
+
+
 @app.command(
     "update",
     help=(
@@ -41,13 +44,27 @@ def install(package: str):
         "  -q  quiet mode (minimal output)"
     )
 )
-
 def update(
     yes: bool = typer.Option(False, "-y", help="Automatically confirm all prompts (non-interactive update)."),
     quiet: bool = typer.Option(False, "-q", help="Reduce output verbosity. Show only important messages."),
 ):
     update_main.update_main(yes,quiet)
     raise typer.Exit()
+
+
+@app.command(
+    "check-update",
+    help=(
+        "Check for available system package updates.\n"
+        "Supports multiple package managers (dnf, apt, pacman, zypper).\n"
+        "Displays a list of packages that can be updated without actually performing the update.\n"
+    )
+)
+
+def update_check():
+    check_update.check_update()
+    raise typer.Exit()
+
 
 @app.command("v", help="Show application version")
 def v():
