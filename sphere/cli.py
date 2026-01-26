@@ -1,4 +1,6 @@
 import typer
+import sys
+from sphere.build.builder import build
 
 from typing import List, Optional
 from pathlib import Path
@@ -16,7 +18,11 @@ from .hardware.gpu_info import gpu_info, handle_gpu_flags
 from .hardware.disk_show import disk_info, handle_disk_flags
 
 from .hardware.users import show_user
-from .install import install_main
+
+from .pkg_actions.install import install_main
+from .pkg_actions.update import update_main
+from .pkg_actions.check_update import check_update
+
 
 from . import logo
 from enum import Enum
@@ -24,11 +30,52 @@ from enum import Enum
 
 app = typer.Typer(help="Sphere {version} Command Line Interface".format(version=app_version.VERSION))
 
-@app.command("install", help=" ")
+
+
+def main():
+    if len(sys.argv) < 3:
+        print("Usage: sph build linux-x-x-x")
+        return
+
+    if sys.argv[1] == "build":
+        build(sys.argv[2])
+
+
+
+@app.command("install", help="Install packages ")
 def install(package: str):
-
     install_main.install(package)
+    raise typer.Exit()
 
+
+
+@app.command(
+    "update",
+    help=(
+        "Update system packages.\n"
+        "Flags:\n"
+        "  -y  auto-confirm all prompts\n"
+        "  -q  quiet mode (minimal output)"
+    )
+)
+def update(
+    yes: bool = typer.Option(False, "-y", help="Automatically confirm all prompts (non-interactive update)."),
+    quiet: bool = typer.Option(False, "-q", help="Reduce output verbosity. Show only important messages."),
+):
+    update_main.update_main(yes,quiet)
+    raise typer.Exit()
+
+
+@app.command(
+    "check-update",
+    help=(
+        "Check for available system package updates.\n"
+        "Supports multiple package managers (dnf, apt, pacman, zypper).\n"
+        "Displays a list of packages that can be updated without actually performing the update.\n"
+    )
+)
+def update_check():
+    check_update.check_update()
     raise typer.Exit()
 
 
