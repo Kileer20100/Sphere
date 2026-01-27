@@ -1,4 +1,4 @@
 import typer
 
-def install(package: str):
+def install_main(package: str):
     typer.echo("Search: " + package)
