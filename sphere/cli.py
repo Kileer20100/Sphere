@@ -1,4 +1,6 @@
 import typer
+import sys
+from sphere.build.builder import build
 
 from typing import List, Optional
 from pathlib import Path
@@ -27,6 +29,18 @@ from enum import Enum
 
 
 app = typer.Typer(help="Sphere {version} Command Line Interface".format(version=app_version.VERSION))
+
+
+
+def main():
+    if len(sys.argv) < 3:
+        print("Usage: sph build linux-x-x-x")
+        return
+
+    if sys.argv[1] == "build":
+        build(sys.argv[2])
+
+
 
 @app.command("install", help="Install packages ")
 def install(package: str):
