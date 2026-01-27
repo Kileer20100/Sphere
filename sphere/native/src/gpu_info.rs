@@ -3,6 +3,8 @@ use wgpu::Instance;
 use pyo3::pyfunction;
 use pyo3::wrap_pyfunction;
 use pyo3::prelude::*; 
+use std::sync::Mutex;
+use once_cell::sync::Lazy;
 
 pub fn register_functions_gpu_info(m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(gpu_name, m)?)?;
@@ -53,7 +55,7 @@ pub fn register_functions_gpu_info(m: &PyModule) -> PyResult<()> {
 }
 
 
-
+static GPU_INFO: Lazy<GpuInfo> = Lazy::new(|| GpuInfo::new());
 
 
 struct GpuInfo{
@@ -77,10 +79,14 @@ impl GpuInfo {
                 .expect("GPU not found")
         });
         Self{
-        info: adapter.get_info(),
-        limits: adapter.limits(),
-        features: adapter.features()
+            info: adapter.get_info(),
+            limits: adapter.limits(),
+            features: adapter.features()
+        }
     }
+
+    pub fn get_cached() -> &'static GpuInfo {
+        &GPU_INFO
     }
 
     pub fn gpu_name(&self) -> String{
@@ -297,80 +303,80 @@ impl GpuInfo {
 //I know this solution is inefficient, but pyo3 gives an "unsafe" error when calling the "GpuInfo" function.
 //Perhaps this will be fixed in the next version.
 #[pyfunction]
-pub fn gpu_name() -> String { GpuInfo::new().gpu_name()}
+pub fn gpu_name() -> String { GpuInfo::get_cached().gpu_name()}
 #[pyfunction]
-pub fn gpu_backend() -> String { GpuInfo::new().gpu_backend()}
+pub fn gpu_backend() -> String { GpuInfo::get_cached().gpu_backend()}
 #[pyfunction]
-pub fn gpu_vendor() -> u32 { GpuInfo::new().gpu_vendor()}
+pub fn gpu_vendor() -> u32 { GpuInfo::get_cached().gpu_vendor()}
 #[pyfunction]
-pub fn gpu_device_id() -> u32 { GpuInfo::new().gpu_device_id()}
+pub fn gpu_device_id() -> u32 { GpuInfo::get_cached().gpu_device_id()}
 #[pyfunction]
-pub fn gpu_type() -> String { GpuInfo::new().gpu_type()}
+pub fn gpu_type() -> String { GpuInfo::get_cached().gpu_type()}
 #[pyfunction]
-pub fn gpu_features() -> String { GpuInfo::new().gpu_features()}
+pub fn gpu_features() -> String { GpuInfo::get_cached().gpu_features()}
 
 // Texture limits
 #[pyfunction]
-pub fn max_texture_1d() -> u32 { GpuInfo::new().max_texture_1d()}
+pub fn max_texture_1d() -> u32 { GpuInfo::get_cached().max_texture_1d()}
 #[pyfunction]
-pub fn gpu_max_texture_dimension_2d() -> u32 { GpuInfo::new().gpu_max_texture_dimension_2d()}
+pub fn gpu_max_texture_dimension_2d() -> u32 { GpuInfo::get_cached().gpu_max_texture_dimension_2d()}
 #[pyfunction]
-pub fn max_texture_3d() -> u32 { GpuInfo::new().max_texture_3d()}
+pub fn max_texture_3d() -> u32 { GpuInfo::get_cached().max_texture_3d()}
 #[pyfunction]
-pub fn max_texture_array_layers() -> u32 { GpuInfo::new().max_texture_array_layers()}
+pub fn max_texture_array_layers() -> u32 { GpuInfo::get_cached().max_texture_array_layers()}
 
 // Bind groups and buffers
 #[pyfunction]
-pub fn max_bind_groups() -> u32 { GpuInfo::new().max_bind_groups()}
+pub fn max_bind_groups() -> u32 { GpuInfo::get_cached().max_bind_groups()}
 #[pyfunction]
-pub fn max_dynamic_uniform_buffers_per_pipeline_layout() -> u32 { GpuInfo::new().max_dynamic_uniform_buffers_per_pipeline_layout()}
+pub fn max_dynamic_uniform_buffers_per_pipeline_layout() -> u32 { GpuInfo::get_cached().max_dynamic_uniform_buffers_per_pipeline_layout()}
 #[pyfunction]
-pub fn max_dynamic_storage_buffers_per_pipeline_layout() -> u32 { GpuInfo::new().max_dynamic_storage_buffers_per_pipeline_layout()}
+pub fn max_dynamic_storage_buffers_per_pipeline_layout() -> u32 { GpuInfo::get_cached().max_dynamic_storage_buffers_per_pipeline_layout()}
 #[pyfunction]
-pub fn max_sampled_textures_per_shader_stage() -> u32 { GpuInfo::new().max_sampled_textures_per_shader_stage()}
+pub fn max_sampled_textures_per_shader_stage() -> u32 { GpuInfo::get_cached().max_sampled_textures_per_shader_stage()}
 #[pyfunction]
-pub fn max_samplers_per_shader_stage() -> u32 { GpuInfo::new().max_samplers_per_shader_stage()}
+pub fn max_samplers_per_shader_stage() -> u32 { GpuInfo::get_cached().max_samplers_per_shader_stage()}
 #[pyfunction]
-pub fn max_storage_buffers_per_shader_stage() -> u32 { GpuInfo::new().max_storage_buffers_per_shader_stage()}
+pub fn max_storage_buffers_per_shader_stage() -> u32 { GpuInfo::get_cached().max_storage_buffers_per_shader_stage()}
 #[pyfunction]
-pub fn max_storage_textures_per_shader_stage() -> u32 { GpuInfo::new().max_storage_textures_per_shader_stage()}
+pub fn max_storage_textures_per_shader_stage() -> u32 { GpuInfo::get_cached().max_storage_textures_per_shader_stage()}
 #[pyfunction]
-pub fn max_uniform_buffers_per_shader_stage() -> u32 { GpuInfo::new().max_uniform_buffers_per_shader_stage()}
+pub fn max_uniform_buffers_per_shader_stage() -> u32 { GpuInfo::get_cached().max_uniform_buffers_per_shader_stage()}
 #[pyfunction]
-pub fn max_uniform_buffer_binding_size() -> u32 { GpuInfo::new().max_uniform_buffer_binding_size()}
+pub fn max_uniform_buffer_binding_size() -> u32 { GpuInfo::get_cached().max_uniform_buffer_binding_size()}
 #[pyfunction]
-pub fn max_storage_buffer_binding_size() -> u32 { GpuInfo::new().max_storage_buffer_binding_size()}
+pub fn max_storage_buffer_binding_size() -> u32 { GpuInfo::get_cached().max_storage_buffer_binding_size()}
 #[pyfunction]
-pub fn min_uniform_buffer_offset_alignment() -> u32 { GpuInfo::new().min_uniform_buffer_offset_alignment()}
+pub fn min_uniform_buffer_offset_alignment() -> u32 { GpuInfo::get_cached().min_uniform_buffer_offset_alignment()}
 #[pyfunction]
-pub fn min_storage_buffer_offset_alignment() -> u32 { GpuInfo::new().min_storage_buffer_offset_alignment()}
+pub fn min_storage_buffer_offset_alignment() -> u32 { GpuInfo::get_cached().min_storage_buffer_offset_alignment()}
 
 // Vertex limits
 #[pyfunction]
-pub fn max_vertex_buffers() -> u32 { GpuInfo::new().max_vertex_buffers()}
+pub fn max_vertex_buffers() -> u32 { GpuInfo::get_cached().max_vertex_buffers()}
 #[pyfunction]
-pub fn max_vertex_attributes() -> u32 { GpuInfo::new().max_vertex_attributes()}
+pub fn max_vertex_attributes() -> u32 { GpuInfo::get_cached().max_vertex_attributes()}
 #[pyfunction]
-pub fn max_vertex_buffer_array_stride() -> u32 { GpuInfo::new().max_vertex_buffer_array_stride()}
+pub fn max_vertex_buffer_array_stride() -> u32 { GpuInfo::get_cached().max_vertex_buffer_array_stride()}
 
 // Compute limits
 #[pyfunction]
-pub fn max_compute_workgroup_storage_size() -> u32 { GpuInfo::new().max_compute_workgroup_storage_size()}
+pub fn max_compute_workgroup_storage_size() -> u32 { GpuInfo::get_cached().max_compute_workgroup_storage_size()}
 #[pyfunction]
-pub fn max_compute_workgroup_size_x() -> u32 { GpuInfo::new().max_compute_workgroup_size_x()}
+pub fn max_compute_workgroup_size_x() -> u32 { GpuInfo::get_cached().max_compute_workgroup_size_x()}
 #[pyfunction]
-pub fn max_compute_workgroup_size_y() -> u32 { GpuInfo::new().max_compute_workgroup_size_y()}
+pub fn max_compute_workgroup_size_y() -> u32 { GpuInfo::get_cached().max_compute_workgroup_size_y()}
 #[pyfunction]
-pub fn max_compute_workgroup_size_z() -> u32 { GpuInfo::new().max_compute_workgroup_size_z()}
+pub fn max_compute_workgroup_size_z() -> u32 { GpuInfo::get_cached().max_compute_workgroup_size_z()}
 #[pyfunction]
-pub fn max_compute_workgroup_size_println() -> String { GpuInfo::new().max_compute_workgroup_size_println()}
+pub fn max_compute_workgroup_size_println() -> String { GpuInfo::get_cached().max_compute_workgroup_size_println()}
 #[pyfunction]
-pub fn max_compute_workgroups_per_dimension() -> String { GpuInfo::new().max_compute_workgroups_per_dimension()}
+pub fn max_compute_workgroups_per_dimension() -> String { GpuInfo::get_cached().max_compute_workgroups_per_dimension()}
 
 // Features
 #[pyfunction]
-pub fn supported_texture_compression() -> String { GpuInfo::new().supported_texture_compression()}
+pub fn supported_texture_compression() -> String { GpuInfo::get_cached().supported_texture_compression()}
 #[pyfunction]
-pub fn supported_shader_features() -> String { GpuInfo::new().supported_shader_features()}
+pub fn supported_shader_features() -> String { GpuInfo::get_cached().supported_shader_features()}
 //I know this solution is inefficient, but pyo3 gives an "unsafe" error when calling the "GpuInfo" function.
 //Perhaps this will be fixed in the next version.
