@@ -36,8 +36,6 @@ def cut(text: str, width: int) -> str:
 def get_info_full():
     partitions = psutil.disk_partitions()
 
-    typer.echo("=== FULL DISK INFORMATION ===\n")
-
     typer.echo(
         f"{'DEVICE':<14} {'MOUNT':<25} {'FS':<10} "
         f"{'TOTAL':>10} {'USED':>10} {'FREE':>10} {'USE%':>6}"
