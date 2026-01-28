@@ -8,7 +8,7 @@ import re
 import time
 import socket
 
-import sphere_native_rust
+from ...lib.cpu import brand
 from ...lib.gpu import gpu_name, gpu_type
 from ...app_version import VERSION
 
@@ -41,18 +41,18 @@ def sph_show():
                   -*%@@@@@@@@@@%+:                  
                 -%@@@@@@@@@@@@@@@@#-   .::::.       
               .*@@@@@@@@@@@@@@@@@@@@#%@%%@@@@%*.                    OS
-             .%@@@@@@@@@@@@@@@@@@@@@@%.  .-%@@@=                    Shell
-             #@@@@@@@@@@@@@@@@@@@@@@@@*    *@@%.                    SPH     
-            =@@@@@@@@@@@@@@@@@@@@@@@@@@-  -@@#.                     Uptime
-            %@@@@@@@@@@@@@@@@@@@@@@@@@@=.*@@+                       MotherBoard
-           :@@@@@@@@@@@@@@@@@@@@@@@@@+-*@@*.                        CPU
-           :@@@@@@@@@@@@@@@@@@@@@@#=-*@%+.                          GPU
-         .+%@@@@@@@@@@@@@@@@@@@#+-+%@#=-                            Memory
-        =%#:#@@@@@@@@@@@@@@@#==+%@%+-=##            
-      :#@+  -@@@@@@@@@@@#+==*%@%+-=#@@@:            
-     -@@*    *@@@@@%*===*%@%#=-=#@@@@@+             
-     %@@#.    =====+#%@%*=-=*%@@@@@@@+              
-     %@@@@####%@@@%#+=-=*%@@@@@@@@@%=               
+             .%@@@@@@@@@@@@@@@@@@@@@@%.  .-%@@@=                    MotherBoard
+             #@@@@@@@@@@@@@@@@@@@@@@@@*    *@@%.                    CPU     
+            =@@@@@@@@@@@@@@@@@@@@@@@@@@-  -@@#.                     GPU
+            %@@@@@@@@@@@@@@@@@@@@@@@@@@=.*@@+                       Memory
+           :@@@@@@@@@@@@@@@@@@@@@@@@@+-*@@*.                        SPH
+           :@@@@@@@@@@@@@@@@@@@@@@#=-*@%+.                          Shell
+         .+%@@@@@@@@@@@@@@@@@@@#+-+%@#=-                            Uptime
+        =%#:#@@@@@@@@@@@@@@@#==+%@%+-=##                            Boot
+      :#@+  -@@@@@@@@@@@#+==*%@%+-=#@@@:                            Distro
+     -@@*    *@@@@@%*===*%@%#=-=#@@@@@+                             Kernel
+     %@@#.    =====+#%@%*=-=*%@@@@@@@+                              CPU Cores/Thears
+     %@@@@####%@@@%#+=-=*%@@@@@@@@@%=                               AVG
       -+*##**+=-:.=*#@@@@@@@@@@@@@+.                
                   .=#%@@@@@@@@%*-.                  
                       :--==-:.                      ⠀⠀⠀⠀⠀
@@ -68,13 +68,18 @@ def sph_show():
     f"{username}@{sys_info.node}",
     "============",
     f"{platform.system()} {hostname.capitalize()} {sys_info.machine}",
-    f"{version}",
-    f"{VERSION}",
-    f"{get_uptime()}",
     f"{get_motherb()}",
     f"{brand()}",
     f"{gpu_name()} {gpu_type()}",
-    f"{ram_info()}"
+    f"{ram_info()}",
+    f"{VERSION}",
+    f"{version}",
+    f"{get_uptime()}",
+    f"{boot_menu()}",
+    f"{distro_info()}",
+    f"{kernel_info()}",
+    f"{cpu_cores()}",
+    f"{load_avg()}"
     ]
 
     logo_lines = logo.splitlines()
@@ -117,5 +122,30 @@ def ram_info():
     ram = psutil.virtual_memory()
     return f"{to_gb(ram.used)}/{to_gb(ram.total)}"
 
-def brand() -> str:
-    return sphere_native_rust.brand()
+def kernel_info():
+    return f"{platform.release()} ({platform.version().split()[0]})"
+
+
+def distro_info():
+    try:
+        with open("/etc/os-release") as f:
+            data = f.read()
+        name = re.search(r'^NAME="?(.*)"?$', data, re.M)
+        version = re.search(r'^VERSION="?(.*)"?$', data, re.M)
+        return f"{name.group(1)} {version.group(1)}"
+    except Exception:
+        return "Unknown"
+
+def boot_menu():
+    return "Boot: UEFI" if os.path.exists("sys/firmware/efi") else "Boot: Legacy"
+
+
+def cpu_cores():
+    return f"Cores {psutil.cpu_count(logical=False)} | Theads {psutil.cpu_count(logical=True)}"
+
+def load_avg():
+    try:
+        l1, l5, l15 = os.getloadavg()
+        return f"{l1:.2f}, {l5:.2f}, {l15:.2f}"
+    except OSError:
+        return "Error"
